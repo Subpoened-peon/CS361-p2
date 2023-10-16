@@ -296,5 +296,224 @@ public class NFATest {
 		assertEquals(nfa.maxCopies("011#00010#"), 3);
 		System.out.println("nfa1 maxCopies done");
 	}
+	//Contains 2 states that lead to the same state on e. Good for ensuring eclosure doesn't overlap.
+	private NFA nfa4() {
+		NFA nfa = new NFA();
+		
+		nfa.addSigma('0');
+		nfa.addSigma('1');
+		nfa.addSigma('2');
+		
+		assertTrue(nfa.addState("a"));
+		assertTrue(nfa.addState("b"));
+		assertTrue(nfa.addState("c"));
+		assertTrue(nfa.addState("d"));
+		assertTrue(nfa.addState("e"));
 
+		assertTrue(nfa.setStart("a"));
+		
+		assertTrue(nfa.setFinal("e"));
+		
+		assertFalse(nfa.addState("a"));
+		assertFalse(nfa.setFinal("f"));
+		assertFalse(nfa.setStart("r"));
+		
+	
+		assertTrue(nfa.addTransition("a", Set.of("a", "b"), '0'));
+		assertTrue(nfa.addTransition("a", Set.of("e"), '1'));
+		assertTrue(nfa.addTransition("a", Set.of("c"), '2'));
+		assertTrue(nfa.addTransition("b", Set.of("a"), '2'));
+		assertTrue(nfa.addTransition("b", Set.of("d"), 'e'));
+		assertTrue(nfa.addTransition("b", Set.of("b"), '1'));
+		assertTrue(nfa.addTransition("c", Set.of("a", "b"), '0'));
+		assertTrue(nfa.addTransition("c", Set.of("d"), 'e'));
+		assertTrue(nfa.addTransition("d", Set.of("b"), '2'));
+		assertTrue(nfa.addTransition("d", Set.of("a", "e"), '1'));
+		assertTrue(nfa.addTransition("e", Set.of("e"), '1'));
+		assertTrue(nfa.addTransition("e", Set.of("a"), '0'));
+		assertTrue(nfa.addTransition("e", Set.of("d"), '2'));
+
+		assertFalse(nfa.addTransition("e", Set.of("f"), 'e'));
+		
+		return nfa;
+		
+	}
+
+	@Test
+	public void test4_1() {
+		NFA nfa = nfa4();
+		System.out.println("nfa4 instantiation done");
+	}
+	
+	@Test
+	public void test4_2() {
+		NFA nfa = nfa4();
+		assertNotNull(nfa.getState("a"));
+		assertNotNull(nfa.getState("c"));
+		assertNotNull(nfa.getState("e"));
+		assertEquals(nfa.getState("a").getName(), "a");
+		assertEquals(nfa.getState("b").getName(), "b");
+		assertEquals(nfa.getState("d").getName(), "d");
+		//ensures the same object
+		assertEquals(nfa.getState("a"), nfa.getState("a"));
+		assertEquals(nfa.getState("c"), nfa.getState("c"));
+		assertEquals(nfa.getState("e"), nfa.getState("e"));
+		assertTrue(nfa.isStart("a"));
+		assertTrue(nfa.isFinal("e"));
+		
+		
+		System.out.println("nfa4 correctness done");
+	}
+	
+	@Test
+	public void test4_3() {
+		NFA nfa = nfa4();
+		assertFalse(nfa.isDFA());
+		System.out.println("nfa4 isDFA done");
+	}
+	
+	@Test
+	public void test4_4() {
+		NFA nfa = nfa4();
+		assertEquals(nfa.eClosure(nfa.getState("a")), Set.of(nfa.getState("a")));
+		assertEquals(nfa.eClosure(nfa.getState("b")), Set.of(nfa.getState("b"), nfa.getState("d")));
+		assertEquals(nfa.eClosure(nfa.getState("c")), Set.of(nfa.getState("c"), nfa.getState("d")));
+		System.out.println("nfa4 eClosure done");
+	}
+	
+	@Test
+	public void test4_5() {
+		NFA nfa = nfa4();
+		assertFalse(nfa.accepts("0"));
+		assertTrue(nfa.accepts("1"));
+		assertFalse(nfa.accepts("00"));
+		assertTrue(nfa.accepts("101"));
+		assertFalse(nfa.accepts("e"));
+		assertFalse(nfa.accepts("0012"));
+		assertTrue(nfa.accepts("01"));
+		assertTrue(nfa.accepts("011"));
+		System.out.println("nfa4 accepts done");
+	}
+	
+	@Test
+	public void test4_6() {
+		NFA nfa = nfa4();
+		assertEquals(nfa.maxCopies("0"), 1);
+		assertEquals(nfa.maxCopies("1"), 1);
+		assertEquals(nfa.maxCopies("00"), 2);
+		assertEquals(nfa.maxCopies("101"), 1);
+		assertEquals(nfa.maxCopies("e"), 1);
+		assertEquals(nfa.maxCopies("2"), 1);
+		assertEquals(nfa.maxCopies("0012"), 2);
+		assertEquals(nfa.maxCopies("01"), 2);
+		assertEquals(nfa.maxCopies("011"), 2);
+		System.out.println("nfa4 maxCopies done");
+	}
+	
+	//contains e closures that lead to other states with transitions on e
+	private NFA nfa5() {
+		NFA nfa = new NFA();
+		
+		nfa.addSigma('0');
+		nfa.addSigma('1');
+		
+		assertTrue(nfa.addState("q0"));
+		assertTrue(nfa.addState("q1"));
+		assertTrue(nfa.addState("q2"));
+		assertTrue(nfa.addState("q3"));
+		assertTrue(nfa.addState("q4"));
+
+		assertTrue(nfa.setStart("q0"));
+		
+		assertTrue(nfa.setFinal("q4"));
+		
+		assertFalse(nfa.setFinal("f"));
+		assertFalse(nfa.setStart("r"));
+		
+	
+		assertTrue(nfa.addTransition("q0", Set.of("q1"), 'e'));
+		assertTrue(nfa.addTransition("q1", Set.of("q2"), 'e'));
+		assertTrue(nfa.addTransition("q2", Set.of("q3"), 'e'));
+		assertTrue(nfa.addTransition("q0", Set.of("q0"), '0'));
+		assertTrue(nfa.addTransition("q1", Set.of("q0"), '1'));
+		assertTrue(nfa.addTransition("q2", Set.of("q1"), '0'));
+		assertTrue(nfa.addTransition("q1", Set.of("q1"), '0'));
+		assertTrue(nfa.addTransition("q2", Set.of("q2"), '1'));
+		assertTrue(nfa.addTransition("q3", Set.of("q4"), '1'));
+		assertTrue(nfa.addTransition("q4", Set.of("q0"), '0'));
+		assertTrue(nfa.addTransition("q4", Set.of("q3"), '1'));
+		assertFalse(nfa.addTransition("e", Set.of("f"), 'e'));
+		
+		return nfa;
+		
+	}
+
+	@Test
+	public void test5_1() {
+		NFA nfa = nfa5();
+		System.out.println("nfa5 instantiation done");
+	}
+	
+	@Test
+	public void test5_2() {
+		NFA nfa = nfa5();
+		assertNotNull(nfa.getState("q0"));
+		assertNotNull(nfa.getState("q1"));
+		assertNotNull(nfa.getState("q4"));
+		assertEquals(nfa.getState("q0").getName(), "q0");
+		assertEquals(nfa.getState("q1").getName(), "q1");
+		assertEquals(nfa.getState("q2").getName(), "q2");
+		//ensures the same object
+		assertEquals(nfa.getState("q2"), nfa.getState("q2"));
+		assertEquals(nfa.getState("q4"), nfa.getState("q4"));
+		assertEquals(nfa.getState("q0"), nfa.getState("q0"));
+		assertTrue(nfa.isStart("q0"));
+		assertTrue(nfa.isFinal("q4"));
+		
+		
+		System.out.println("nfa5 correctness done");
+	}
+	
+	@Test
+	public void test5_3() {
+		NFA nfa = nfa5();
+		assertFalse(nfa.isDFA());
+		System.out.println("nfa5 isDFA done");
+	}
+	
+	@Test
+	public void test5_4() {
+		NFA nfa = nfa5();
+		assertEquals(nfa.eClosure(nfa.getState("q0")), Set.of(nfa.getState("q0"), nfa.getState("q1"), nfa.getState("q2"), nfa.getState("q3")));
+		assertEquals(nfa.eClosure(nfa.getState("q1")), Set.of(nfa.getState("q1"), nfa.getState("q2"), nfa.getState("q3")));
+		assertEquals(nfa.eClosure(nfa.getState("q2")), Set.of(nfa.getState("q2"), nfa.getState("q3")));
+		assertEquals(nfa.eClosure(nfa.getState("q4")), Set.of(nfa.getState("q4")));
+		System.out.println("nfa5 eClosure done");
+	}
+	
+	@Test
+	public void test5_5() {
+		NFA nfa = nfa5();
+		assertFalse(nfa.accepts("0"));
+		assertTrue(nfa.accepts("1"));
+		assertFalse(nfa.accepts("00"));
+		assertTrue(nfa.accepts("101"));
+		assertFalse(nfa.accepts("e"));
+		assertFalse(nfa.accepts("0012"));
+		assertTrue(nfa.accepts("01"));
+		assertTrue(nfa.accepts("011"));
+		System.out.println("nfa5 accepts done");
+	}
+	
+	@Test
+	public void test5_6() {
+		NFA nfa = nfa5();
+		assertEquals(nfa.maxCopies("0"), 3);
+		assertEquals(nfa.maxCopies("1"), 3);
+		assertEquals(nfa.maxCopies("00"), 3);
+		assertEquals(nfa.maxCopies("101"), 6);
+		assertEquals(nfa.maxCopies("e"), 3);
+		System.out.println("nfa5 maxCopies done");
+	}
+	
 }
