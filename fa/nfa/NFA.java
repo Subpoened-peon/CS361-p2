@@ -1,59 +1,95 @@
 package fa.nfa;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import fa.State;
 
 public class NFA implements NFAInterface {
 
+    private TreeSet<Character> alphabet;
+    private TreeSet<NFAState> states;
+    private TreeSet<NFAState> finalStates;
+
     private NFAState start;
 
-    @Override
+    public NFA() {
+        alphabet = new TreeSet<Character>();
+        states = new TreeSet<NFAState>();
+        finalStates = new TreeSet<NFAState>();
+
+        this.start = null;
+    }
+
     public boolean addState(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addState'");
+        return states.add(new NFAState(name));
     }
 
-    @Override
     public boolean setFinal(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFinal'");
+        boolean check = false;
+        Iterator<NFAState> stCheck = states.iterator();
+        while(stCheck.hasNext()) {
+            if(stCheck.next().getName().equals(name)) {
+                finalStates.add(new NFAState(name));
+                check = true;
+            }
+        }
+        return check;
     }
 
-    @Override
     public boolean setStart(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setStart'");
+        boolean check = false;
+        Iterator<NFAState> stCheck = states.iterator();
+
+        while(stCheck.hasNext()) {
+            NFAState current = stCheck.next();
+            if(current.getName().equals(name)) {
+                this.start = current;
+                check = true;
+            }
+        }
+        return check;
     }
 
-    @Override
+   
     public void addSigma(char symbol) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addSigma'");
+        alphabet.add(symbol);
     }
+
+
 
     @Override
     public boolean accepts(String s) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'accepts'");
     }
-
-    @Override
+    
     public Set<Character> getSigma() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSigma'");
+        return this.alphabet;
     }
 
-    @Override
     public State getState(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getState'");
+        for(NFAState state : states) {
+            if(state.getName().equals(name)){
+                return state;
+            }
+        }
+        return null;
     }
 
     @Override
     public boolean isFinal(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isFinal'");
+        boolean check = false;
+        for(State s : finalStates) {
+            if(s.getName().equals(name)) {
+                check = true;
+            }
+        }
+        return check;
     }
 
     public boolean isStart(String name) {
@@ -79,15 +115,34 @@ public class NFA implements NFAInterface {
     }
 
     @Override
-    public boolean addTransition(String fromState, Set<String> toStates, char onSymb) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addTransition'");
+    public boolean addTransition(String fromState, Set<String> toStateStrings, char onSymb) {
+        Set<NFAState> toStates = new TreeSet<NFAState>();
+        for(String state : toStateStrings) toStates.add(new NFAState(state));
+
+        if(states.contains(new NFAState(fromState)) && alphabet.contains(onSymb)) {
+            Iterator<NFAState> stCheck = states.iterator();
+            while(stCheck.hasNext()) {
+                NFAState current = stCheck.next();
+                if(current.getName().equals(fromState)) {
+                    current.addTransition(onSymb, toStates);
+                    return true;
+                }
+            }
+        } 
+        return false;
     }
 
     @Override
     public boolean isDFA() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isDFA'");
+        for(NFAState state : states) {
+            Map<Character, Set<NFAState>> currtransitions = state.getTransitions();
+            for(Character tran : alphabet) {
+                if(currtransitions.containsKey(tran) && currtransitions.get(tran).size() > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

@@ -3,9 +3,9 @@ package fa.nfa;
 import fa.State;
 import java.util.*;
 
-public class NFAState extends State{
+public class NFAState extends State implements Comparable<NFAState>{
     
-    private Map<Character, Set<State>> myTransitions;
+    private Map<Character, Set<NFAState>> myTransitions;
     /**
      * Empty constructor for NFAState
      */
@@ -19,15 +19,27 @@ public class NFAState extends State{
      */
     public NFAState(String name) {
         super(name);
-        this.myTransitions = new HashMap<Character, Set<State>>();
+        this.myTransitions = new HashMap<Character, Set<NFAState>>();
     }
     /**
      * adds a transition to this NFAState
      * @param Character Symbol that causes the transition into the other state
      * @param nfaState State that is transitioned into from this state
      */
-    public void addTransition(char symbol, Set<State> nfaState) {
-        this.myTransitions.put(symbol, nfaState);
+    public void addTransition(char symbol, Set<NFAState> toStates) {
+        if (!myTransitions.containsKey(symbol)) {
+            myTransitions.put(symbol, toStates);
+        } else {
+            for(NFAState state : toStates) myTransitions.get(symbol).add(state);
+        }
+    }
+
+    public Map<Character, Set<NFAState>> getTransitions() {
+        return myTransitions;
+    }
+
+    public int compareTo(NFAState o) {
+       return this.getName().compareTo(o.getName());
     }
 
 
