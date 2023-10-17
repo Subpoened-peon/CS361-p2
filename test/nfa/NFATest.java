@@ -29,8 +29,7 @@ public class NFATest {
 	
 		assertTrue(nfa.addTransition("a", Set.of("a"), '0'));
 		assertTrue(nfa.addTransition("a", Set.of("b"), '1'));
-		//I SWITCHED THE NEXT ONE TO FALSE -Kai
-		assertFalse(nfa.addTransition("b", Set.of("a"), 'e'));
+		assertTrue(nfa.addTransition("b", Set.of("a"), 'e'));
 		
 		assertFalse(nfa.addTransition("c", Set.of("a"), '0'));
 		assertFalse(nfa.addTransition("a", Set.of("b"), '3'));
@@ -222,7 +221,7 @@ public class NFATest {
 		assertTrue(nfa.addTransition("W", Set.of("L"), 'e'));
 		
 		assertTrue(nfa.addTransition("L", Set.of("L","N"), '0'));
-		assertTrue(nfa.addTransition("L", Set.of("I"), 'e'));
+		assertFalse(nfa.addTransition("L", Set.of("I"), 'e'));
 		
 		assertTrue(nfa.addTransition("I", Set.of("I"), '1'));
 		assertTrue(nfa.addTransition("I", Set.of("N"), '1'));

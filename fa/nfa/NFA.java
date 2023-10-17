@@ -104,8 +104,10 @@ public class NFA implements NFAInterface {
 
     @Override
     public Set<NFAState> eClosure(NFAState s) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eClosure'");
+        
+
+
+
     }
 
     @Override
@@ -114,12 +116,16 @@ public class NFA implements NFAInterface {
         throw new UnsupportedOperationException("Unimplemented method 'maxCopies'");
     }
 
-    @Override
     public boolean addTransition(String fromState, Set<String> toStateStrings, char onSymb) {
         Set<NFAState> toStates = new TreeSet<NFAState>();
-        for(String state : toStateStrings) toStates.add(new NFAState(state));
+        for(String stateString : toStateStrings) {
+            toStates.add(new NFAState(stateString));
+        }
+        for(NFAState state : toStates) {
+            if(!states.contains(state)) return false;
+        }
 
-        if(states.contains(new NFAState(fromState)) && alphabet.contains(onSymb)) {
+        if(states.contains(new NFAState(fromState)) && (alphabet.contains(onSymb) || onSymb == 'e')) {
             Iterator<NFAState> stCheck = states.iterator();
             while(stCheck.hasNext()) {
                 NFAState current = stCheck.next();
@@ -132,7 +138,6 @@ public class NFA implements NFAInterface {
         return false;
     }
 
-    @Override
     public boolean isDFA() {
         for(NFAState state : states) {
             Map<Character, Set<NFAState>> currtransitions = state.getTransitions();
