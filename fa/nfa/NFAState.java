@@ -33,11 +33,16 @@ public class NFAState extends State implements Comparable<NFAState>{
             for(NFAState state : toStates) myTransitions.get(symbol).add(state);
         }
     }
-
+    /**
+     * returns the map of transitions that this NFAState contains
+     * @return the transitions of the NFAState
+     */
     public Map<Character, Set<NFAState>> getTransitions() {
-        return myTransitions;
+        return this.myTransitions;
     }
-
+    /**
+     * Compares this NFA to the one placed inside the parameter
+     */
     public int compareTo(NFAState o) {
        return this.getName().compareTo(o.getName());
     }

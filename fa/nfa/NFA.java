@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
+import java.util.Stack;
 import fa.State;
 
 public class NFA implements NFAInterface {
@@ -81,7 +81,6 @@ public class NFA implements NFAInterface {
         return null;
     }
 
-    @Override
     public boolean isFinal(String name) {
         boolean check = false;
         for(State s : finalStates) {
@@ -96,18 +95,35 @@ public class NFA implements NFAInterface {
         return name.equals(start.getName());
     }
 
-    @Override
     public Set<NFAState> getToState(NFAState from, char onSymb) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getToState'");
+        return null;
     }
 
     @Override
     public Set<NFAState> eClosure(NFAState s) {
-        
+        Set<NFAState> eClosures = new TreeSet<>();
 
-
-
+        Stack<NFAState> eStack = new Stack<>();
+        //Starting the stack with NFAState s
+        eStack.push(s);
+        while(!eStack.isEmpty()) {
+            
+            NFAState currState = eStack.peek();
+            System.out.println(currState.equals(eStack.pop()));
+            System.out.println(currState.getName());
+            if (!eClosures.contains(currState)) {
+                eClosures.add(currState);
+                Set<NFAState> eTransitions = currState.getTransitions().get('e');
+                if(eTransitions != null) {
+                    for (NFAState nextState : eTransitions) {
+                        if(!eClosures.contains(nextState)) {
+                            eStack.push(nextState);
+                        }
+                    }
+                }
+            }
+        }
+        return eClosures;
     }
 
     @Override
