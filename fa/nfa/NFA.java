@@ -72,7 +72,7 @@ public class NFA implements NFAInterface {
         return this.alphabet;
     }
 
-    public State getState(String name) {
+    public NFAState getState(String name) {
         for(NFAState state : states) {
             if(state.getName().equals(name)){
                 return state;
@@ -138,9 +138,11 @@ public class NFA implements NFAInterface {
         return false;
     }
 
+    //if there are any e transitions OR if there are multiple transitions on the same symbol
     public boolean isDFA() {
         for(NFAState state : states) {
             Map<Character, Set<NFAState>> currtransitions = state.getTransitions();
+            if (currtransitions.keySet().contains(Character.valueOf('e'))) return false;
             for(Character tran : alphabet) {
                 if(currtransitions.containsKey(tran) && currtransitions.get(tran).size() > 1) {
                     return false;
