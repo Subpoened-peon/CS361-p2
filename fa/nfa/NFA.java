@@ -121,14 +121,36 @@ public class NFA implements NFAInterface {
     }
 
     public Set<NFAState> getToState(NFAState from, char onSymb) {
-        return null;
+        Set<NFAState> delta = new TreeSet<>();
+
+        if(states.contains(from)) {
+            Map<Character, Set<NFAState>> transitions = from.getTransitions();
+        if (transitions != null && transitions.containsKey(onSymb)) {
+            for(NFAState TransitionStates : transitions.get(onSymb)) {
+                     //This is to get the actual states with their myTransitions map copied
+                for(NFAState state : states) {
+                    if(TransitionStates.compareTo(state) == 0) {
+                         TransitionStates = state;
+                         break;
+                    }
+                    delta.add(TransitionStates);
+                }
+            }
+                Set<NFAState> epsilonClosure = this.eClosure(from);
+                if(epsilonClosure != null) {
+                    delta.addAll(epsilonClosure);
+                }
+            }
+        }
+
+        return delta;
     }
 
-    @Override
     public Set<NFAState> eClosure(NFAState s) {
         Set<NFAState> eClosures = new TreeSet<>();
 
         Stack<NFAState> eStack = new Stack<>();
+
         //Starting the stack with NFAState s
         eStack.push(s);
         while(!eStack.isEmpty()) {
@@ -140,6 +162,8 @@ public class NFA implements NFAInterface {
                     Iterator<NFAState> eIterator = eTransitions.iterator();
                     while(eIterator.hasNext()) {
                         NFAState nextState = eIterator.next();
+
+                        //This is to get the actual states with their myTransitions map copied
                         for(NFAState state : states) {
                             if(nextState.compareTo(state) == 0) {
                                 nextState = state;
@@ -156,10 +180,10 @@ public class NFA implements NFAInterface {
         return eClosures;
     }
 
-    @Override
     public int maxCopies(String s) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'maxCopies'");
+        int maxCopies = 1;
+
+        return maxCopies;
     }
 
     public boolean addTransition(String fromState, Set<String> toStateStrings, char onSymb) {
