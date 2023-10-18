@@ -64,8 +64,33 @@ public class NFA implements NFAInterface {
 
     @Override
     public boolean accepts(String s) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'accepts'");
+        TreeSet<NFAState> stateLayer = new TreeSet<NFAState>();
+        stateLayer.add(start);
+        stateLayer.addAll(eClosure(start));
+
+        for(int i = 0; i < s.length(); i++) {
+            char currentTransition = s.charAt(i);
+            TreeSet<NFAState> newLayer = new TreeSet<NFAState>();
+            for(NFAState state : stateLayer) {
+                if(state.getTransitions().containsKey(currentTransition)) {
+                    newLayer.addAll(state.getTransitions().get(currentTransition));
+                }
+            }
+            for(NFAState state : newLayer) {
+                System.out.println();
+                System.out.print(newLayer.toString() + " - ");
+                newLayer.addAll(eClosure(state));
+                System.out.print(eClosure(state) + " - ");
+                System.out.println(newLayer.toString());
+            }
+            stateLayer = newLayer;
+        }
+        
+        for(NFAState state : stateLayer) {
+                if(isFinal(state.getName())) return true;
+        }
+
+        return false;
     }
     
     public Set<Character> getSigma() {
