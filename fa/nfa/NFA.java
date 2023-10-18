@@ -64,30 +64,37 @@ public class NFA implements NFAInterface {
 
     @Override
     public boolean accepts(String s) {
+        //think of searching an NFA as a tree diagram, this is a layer of the tree
         TreeSet<NFAState> stateLayer = new TreeSet<NFAState>();
         stateLayer.add(start);
         stateLayer.addAll(eClosure(start));
 
         for(int i = 0; i < s.length(); i++) {
+
             char currentTransition = s.charAt(i);
-            TreeSet<NFAState> newLayer = new TreeSet<NFAState>();
+            TreeSet<NFAState> newLayer = new TreeSet<NFAState>(); //which possible states can we transition to?
             for(NFAState state : stateLayer) {
-                if(state.getTransitions().containsKey(currentTransition)) {
-                    newLayer.addAll(state.getTransitions().get(currentTransition));
+                if(state.getTransitions().containsKey(currentTransition)) { //if there are transitions from the current state on the current symbol
+                    newLayer.addAll(state.getTransitions().get(currentTransition)); //add the possible transitions
                 }
             }
+            /* This next part is goofy and inefficient, but it works. I made tempLayer as an object that looks at
+             * which states are in new layer then adds the real states with working transitions. */
+            TreeSet<NFAState> tempLayer = new TreeSet<NFAState>();
             for(NFAState state : newLayer) {
-                System.out.println();
-                System.out.print(newLayer.toString() + " - ");
-                newLayer.addAll(eClosure(state));
-                System.out.print(eClosure(state) + " - ");
-                System.out.println(newLayer.toString());
+                for(NFAState realState : states) {
+                    if(state.getName().equals(realState.getName())){
+                        tempLayer.add(realState);
+                        tempLayer.addAll(eClosure(realState)); //add the e-Closure of the new states
+                    } 
+                }
             }
-            stateLayer = newLayer;
+            stateLayer = tempLayer; //now our new layer is complete and we can go on to the next one
         }
         
+        //Did we finish on an end state? Let's see if the final layer of the tree contains an end state
         for(NFAState state : stateLayer) {
-                if(isFinal(state.getName())) return true;
+                if(isFinal(state.getName())) return true; 
         }
 
         return false;
