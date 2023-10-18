@@ -27,10 +27,10 @@ public class NFAState extends State implements Comparable<NFAState>{
      * @param nfaState State that is transitioned into from this state
      */
     public void addTransition(char symbol, Set<NFAState> toStates) {
-        if (!myTransitions.containsKey(symbol)) {
-            myTransitions.put(symbol, toStates);
+        if (!this.myTransitions.containsKey(symbol)) {
+            this.myTransitions.put(symbol, toStates);
         } else {
-            for(NFAState state : toStates) myTransitions.get(symbol).add(state);
+            for(NFAState state : toStates) this.myTransitions.get(symbol).add(state);
         }
     }
     /**
@@ -41,7 +41,7 @@ public class NFAState extends State implements Comparable<NFAState>{
         return this.myTransitions;
     }
     /**
-     * Compares this NFA to the one placed inside the parameter
+     * Compares this NFAs name to the one placed inside the parameter
      */
     public int compareTo(NFAState o) {
        return this.getName().compareTo(o.getName());

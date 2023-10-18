@@ -107,15 +107,20 @@ public class NFA implements NFAInterface {
         //Starting the stack with NFAState s
         eStack.push(s);
         while(!eStack.isEmpty()) {
-            
-            NFAState currState = eStack.peek();
-            System.out.println(currState.equals(eStack.pop()));
-            System.out.println(currState.getName());
+            NFAState currState = eStack.pop();
             if (!eClosures.contains(currState)) {
                 eClosures.add(currState);
                 Set<NFAState> eTransitions = currState.getTransitions().get('e');
                 if(eTransitions != null) {
-                    for (NFAState nextState : eTransitions) {
+                    Iterator<NFAState> eIterator = eTransitions.iterator();
+                    while(eIterator.hasNext()) {
+                        NFAState nextState = eIterator.next();
+                        for(NFAState state : states) {
+                            if(nextState.compareTo(state) == 0) {
+                                nextState = state;
+                                break;
+                            }
+                        }
                         if(!eClosures.contains(nextState)) {
                             eStack.push(nextState);
                         }
