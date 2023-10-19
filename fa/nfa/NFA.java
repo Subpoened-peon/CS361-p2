@@ -62,7 +62,6 @@ public class NFA implements NFAInterface {
 
 
 
-    @Override
     public boolean accepts(String s) {
         //think of searching an NFA as a tree diagram, this is a layer of the tree
         TreeSet<NFAState> stateLayer = new TreeSet<NFAState>();
@@ -189,7 +188,35 @@ public class NFA implements NFAInterface {
 
     public int maxCopies(String s) {
         int maxCopies = 1;
-
+        //think of searching an NFA as a tree diagram, this is a layer of the tree
+        /*This method is almost identical to accepts, except it returns a number that is equal to the max
+            number of states that can occur in a layer.
+        */
+        TreeSet<NFAState> stateLayer = new TreeSet<NFAState>();
+        stateLayer.add(start);
+        stateLayer.addAll(eClosure(start));
+        maxCopies = Math.max(maxCopies, stateLayer.size());
+        for(int i = 0; i < s.length(); i++) {
+            System.out.println("Step " + i + ": Active States: " + stateLayer + " copies: " + stateLayer.size());
+            char currentTransition = s.charAt(i);
+            TreeSet<NFAState> newLayer = new TreeSet<NFAState>(); //which possible states can we transition to?
+            for(NFAState state : stateLayer) {
+                if(state.getTransitions().containsKey(currentTransition)) { //if there are transitions from the current state on the current symbol
+                    newLayer.addAll(state.getTransitions().get(currentTransition)); //add the possible transitions
+                }
+            }
+            TreeSet<NFAState> tempLayer = new TreeSet<NFAState>();
+            for(NFAState state : newLayer) {
+                for(NFAState realState : states) {
+                    if(state.getName().equals(realState.getName())){
+                        tempLayer.add(realState);
+                        tempLayer.addAll(eClosure(realState)); //add the e-Closure of the new states
+                    } 
+                }
+            }
+            stateLayer = tempLayer; 
+            maxCopies = Math.max(maxCopies, stateLayer.size());
+        }
         return maxCopies;
     }
 
