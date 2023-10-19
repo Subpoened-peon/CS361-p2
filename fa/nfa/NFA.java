@@ -8,7 +8,15 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Stack;
 import fa.State;
-
+/**
+ * This class represents a program that replicates an NFA machine. It has an alphabet, set of states,
+ * final states, a start state and transitions are found inside these states. The program is designed
+ * to allow for users to check and see if certain strings are accepted by the machine they created 
+ * @author Nicholas Merritt
+ * @author Kai Sorensen
+ * @version best one
+ * @since forever
+ */
 public class NFA implements NFAInterface {
 
     private TreeSet<Character> alphabet;
@@ -17,6 +25,10 @@ public class NFA implements NFAInterface {
 
     private NFAState start;
 
+    /**
+     * This empty constructor creates each set required for the NFA and does not currently
+     * have a start state. It is completely empty and is populated with the add, set methods.
+     */
     public NFA() {
         alphabet = new TreeSet<Character>();
         states = new TreeSet<NFAState>();

@@ -2,7 +2,17 @@ package fa.nfa;
 
 import fa.State;
 import java.util.*;
-
+/**
+ * This class extends State and the methods pulled from it were authored by elenasherman
+ * This class represents the states and their transitions for an NFA machine. They
+ * contain a map that holds all the transitional states they can go to for each symbol.
+ * Unlike DFAStates, they can have a symbol that can be mapped to multiple states.
+ * @author Nicholas Merritt
+ * @author Kai Sorensen
+ * @author elenasherman
+ * @version best one
+ * @since forever
+ */
 public class NFAState extends State implements Comparable<NFAState>{
     
     private Map<Character, Set<NFAState>> myTransitions;
